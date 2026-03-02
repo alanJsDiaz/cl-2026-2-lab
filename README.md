@@ -95,27 +95,53 @@ $ cat README.md
     - ¿Es un problema de ambigüedad léxica (la palabra tiene múltiples etiquetas)?
     - ¿Qué *features* añadirías para solucionarlo?
 
-
 ## Práctica 2: Propiedades estadísticas del lenguaje y Diversidad
 
 ### Fecha de entrega: 17 de Marzo de 2026 11:59pm 
 
-**1. Verificación empírica de la Ley de Zipf**
+### 1. Verificación empírica de la Ley de Zipf
 
-Verificar si la ley de Zipf se cumple en un lenguaje artificial creado por ustedes.
-* *Instrucciones:* Creen un script que genere un texto aleatorio seleccionando caracteres al azar de un alfabeto definido. **Nota:** Asegúrense de incluir el carácter de "espacio" en su alfabeto para que el texto se divida en "palabras" de longitudes variables.
-* Obtengan las frecuencias de este texto artificial y generen las gráficas de rango vs. frecuencia (en escala lineal y logarítmica).
+Verificar si la ley de Zipf se cumple en los siguientes casos:
+
+1. En un lenguaje artificial creado por ustedes.
+    * Creen un script que genere un texto aleatorio seleccionando caracteres al azar de un alfabeto definido. 
+        * **Nota:** Asegúrense de incluir el carácter de "espacio" en su alfabeto para que el texto se divida en "palabras" de longitudes variables.
+    * Obtengan las frecuencias de las palabras generadas para este texto artificial
+2. Alguna lengua de bajos recursos digitales (*low-resourced language*)
+    * Busca un corpus de libre acceso en alguna lengua de bajos recursos digitales
+    * Obten las frecuencias de sus palabras
+
+En ambos casos realiza lo siguiente:
+* Estima el parámetro $\alpha$ que mejor se ajuste a la curva
+* Generen las gráficas de rango vs. frecuencia (en escala y logarítmica).
+    * Incluye la recta aproximada por $\alpha$
 * ¿Se aproxima a la ley de Zipf? Justifiquen su respuesta comparándolo con el comportamiento del corpus visto en clase.
 
-**2. Desempeño de NER en distintos dominios (Out-of-domain)**
+> [!TIP]
+> Puedes utilizar los corpus del paquete [`py-elotl`](TODO)
+
+### 2. Visualizando la diversidad lingüística de México
+
+1. Usando los datos de Glottolog filtralos con base en la región geográfica que corresponde a México
+    - Usa las columnas `"longitude"` y `"latitude"`
+2. Realiza un plot de las lenguas por región de un mapa
+    - Utiliza un color por familia linguistica en el mapa
+3. Haz lo mismo para otro país del mundo
+
+Responde las preguntas:
+
+- ¿Que tanta diversidad lingüística hay en México con respecto a otras regiones?
+- ¿Cuál es la zona que dirias que tiene mayor diversidad en México?
+
+> [!TIP]
+> Utiliza la biblioteca [`plotly`]() para crear mapa interactivos
+
+### EXTRA. Desempeño de NER en distintos dominios (Out-of-domain)
+
 Explorar la plataforma [Hugging Face Datasets](https://huggingface.co/datasets) y elegir documentos en Español provenientes de al menos 3 dominios muy distintos (ej. noticias, artículos médicos, tweets/redes sociales, foros legales).
 * Realizar Reconocimiento de Entidades Nombradas (NER) en muestras de cada dominio utilizando spaCy o la herramienta de su preferencia.
 * Mostrar una distribución de frecuencias de las etiquetas (PER, ORG, LOC, etc.) más comunes por dominio.
 * **Análisis:** Incluyan comentarios críticos sobre el desempeño observado. ¿En qué dominio el modelo cometió más errores y a qué creen que se deba estadísticamente?
 
-**3. Cuantificando la diversidad genealógica (Glottolog)**
-Utilizando el código visto en el laboratorio para reconstruir linajes y calcular distancias con el prefijo común más largo (Longest Common Prefix):
-* Seleccionen dos familias lingüísticas presentes en México que tengan al menos 5 lenguas registradas en el dataset (por ejemplo, Uto-Aztecan, Mayan, Otomanguean). 
-* Generen la matriz de similitud y el mapa de calor (Heatmap) para cada familia.
-* Calculen el **promedio general de similitud** de cada matriz (omitiendo la diagonal principal donde la lengua se compara consigo misma). 
-* **Conclusión:** ¿Qué familia lingüística presenta mayor diversidad interna (es decir, un promedio de similitud más bajo)?
+> [!TIP]
+> Utiliza bibliotecas con modelos preentrenados que te permitan realizar el etiquetado NER como [`spacy`]() o [`stanza`]()

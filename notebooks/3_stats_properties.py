@@ -52,6 +52,7 @@
 # * $O$ simbolo inicial o nodo raíz.
 # * $R$ reglas de la forma $X \longrightarrow \gamma$ donde $X$ es no terminal y $\gamma$ es una secuencia de terminales y no terminales
 
+import os
 import nltk
 import pandas as pd
 import numpy as np
@@ -383,13 +384,6 @@ plt.ylabel("log frecs")
 plt.legend(bbox_to_anchor=(1, 1))
 plt.show()
 
-# #### 📊 Ejercicio: Verificando ley de Zipf
-#
-# - Busca un corpus en otra lengua (no español) en hugging face y descargalo
-#     - Si es muy grande toma una muestra
-# - Estima su parámetro $\alpha$
-# - Verifica a ojo de buen cubero si se cumple la ley de Zipf
-
 # ### Ley de Heap
 
 # Relación entre el número de **tokens** y **tipos** de un corpus
@@ -415,46 +409,18 @@ plt.show()
 
 # Glottolog es uncatálogo de las lenguas, familias lingúísticas y dialectos del mundo (identificados como *languids*). Asigna a cada *languoid* un código único y estable. Los *languids* son organizados por clasificaciones genealógicas (un árbol de Glottolog) que está basado en archivos de investigaciones historicas comparables.
 #
-# Podemos [descargar los datos](https://glottolog.org/meta/downloads) de la plataforma gracias a su [licencia libre](https://creativecommons.org/licenses/by/4.0/). Para está práctica utilizarmos el archivo [`languages_and_dialects_geo.csv`](https://cdstar.eva.mpg.de//bitstreams/EAEA0-2198-D710-AA36-0/languages_and_dialects_geo.csv)
+# Podemos [descargar los datos](https://glottolog.org/meta/downloads) de la plataforma gracias a su [licencia libre](https://creativecommons.org/licenses/by/4.0/). Para está práctica utilizarmos los archivo [`languages_and_dialects_geo.csv`](https://cdstar.eva.mpg.de//bitstreams/EAEA0-2198-D710-AA36-0/languages_and_dialects_geo.csv) y [`languoid.csv`](https://cdstar.eva.mpg.de//bitstreams/EAEA0-2198-D710-AA36-0/glottolog_languoid.csv.zip).
 
-# Se asume que se ha descargado el archivo y que se encuentra en la carpeta data/
-languages = pd.read_csv("data/languages_and_dialects_geo.csv")
+# Se asume que se han descargado los archivo y que se encuentra en la carpeta data/
+DATA_PATH = "data"
+LANG_GEO_FILE = "languages_and_dialects_geo.csv"
+LANGUOID_FILE = "languoid.csv"
+
+languages = pd.read_csv(os.path.join(DATA_PATH, LANG_GEO_FILE))
 
 languages.head()
 
-# +
-min_lat = 14.5
-max_lat = 32.7
-min_long = -118.4
-max_long = -86.8
-
-# Filtramos el dataset
-mexico_languages = languages[
-    (languages["latitude"] >= min_lat)
-    & (languages["latitude"] <= max_lat)
-    & (languages["longitude"] >= min_long)
-    & (languages["longitude"] <= max_long)
-]
-mexico_languages
-
-# +
-import plotly.express as px
-
-fig = px.scatter_map(
-    mexico_languages,
-    lat="latitude",
-    lon="longitude",
-    hover_name="name",
-    zoom=4,
-    height=600,
-)
-
-fig.update_layout(mapbox_style="open-street-map")
-
-fig.show()
-# -
-
-languoids = pd.read_csv("data/languoid.csv")
+languoids = pd.read_csv(os.path.join(DATA_PATH, LANGUOID_FILE))
 
 # +
 # Reconstrucción de linajes usando grafos locales (languoid.csv)
@@ -554,22 +520,47 @@ fig.show()
 #
 # **1. Verificación empírica de la Ley de Zipf**
 #
-# Verificar si la ley de Zipf se cumple en un lenguaje artificial creado por ustedes.
-# * *Instrucciones:* Creen un script que genere un texto aleatorio seleccionando caracteres al azar de un alfabeto definido. **Nota:** Asegúrense de incluir el carácter de "espacio" en su alfabeto para que el texto se divida en "palabras" de longitudes variables.
-# * Obtengan las frecuencias de este texto artificial y generen las gráficas de rango vs. frecuencia (en escala lineal y logarítmica).
+# Verificar si la ley de Zipf se cumple en los siguientes casos:
+#
+# 1. En un lenguaje artificial creado por ustedes.
+#     * Creen un script que genere un texto aleatorio seleccionando caracteres al azar de un alfabeto definido. 
+#         * **Nota:** Asegúrense de incluir el carácter de "espacio" en su alfabeto para que el texto se divida en "palabras" de longitudes variables.
+#     * Obtengan las frecuencias de las palabras generadas para este texto artificial
+# 2. Alguna lengua de bajos recursos digitales (*low-resourced language*)
+#     * Busca un corpus de libre acceso en alguna lengua de bajos recursos digitales
+#     * Obten las frecuencias de sus palabras
+#
+# En ambos casos realiza lo siguiente:
+# * Estima el parámetro $\alpha$ que mejor se ajuste a la curva
+# * Generen las gráficas de rango vs. frecuencia (en escala y logarítmica).
+#     * Incluye la recta aproximada por $\alpha$
 # * ¿Se aproxima a la ley de Zipf? Justifiquen su respuesta comparándolo con el comportamiento del corpus visto en clase.
 #
-# **2. Desempeño de NER en distintos dominios (Out-of-domain)**
+# > [!TIP]
+# > Puedes utilizar los corpus del paquete [`py-elotl`](TODO)
+#
+# **2. Visualizando la diversidad lingüística de México**
+#
+# 1. Usando los datos de Glottolog filtralos con base en la región geográfica que corresponde a México
+#     - Usa las columnas `"longitude"` y `"latitude"`
+# 2. Realiza un plot de las lenguas por región de un mapa
+#     - Utiliza un color por familia linguistica en el mapa
+# 3. Haz lo mismo para otro país del mundo
+#
+# Responde las preguntas:
+#
+# - ¿Que tanta diversidad lingüística hay en México con respecto a otras regiones?
+# - ¿Cuál es la zona que dirias que tiene mayor diversidad en México?
+#
+# > [!TIP]
+# > Utiliza la biblioteca [`plotly`]() para crear mapa interactivos
+#
+# **EXTRA. Desempeño de NER en distintos dominios (Out-of-domain)**
+#
 # Explorar la plataforma [Hugging Face Datasets](https://huggingface.co/datasets) y elegir documentos en Español provenientes de al menos 3 dominios muy distintos (ej. noticias, artículos médicos, tweets/redes sociales, foros legales).
 # * Realizar Reconocimiento de Entidades Nombradas (NER) en muestras de cada dominio utilizando spaCy o la herramienta de su preferencia.
 # * Mostrar una distribución de frecuencias de las etiquetas (PER, ORG, LOC, etc.) más comunes por dominio.
 # * **Análisis:** Incluyan comentarios críticos sobre el desempeño observado. ¿En qué dominio el modelo cometió más errores y a qué creen que se deba estadísticamente?
 #
-# **3. Cuantificando la diversidad genealógica (Glottolog)**
-# Utilizando el código visto en el laboratorio para reconstruir linajes y calcular distancias con el prefijo común más largo (Longest Common Prefix):
-# * Seleccionen dos familias lingüísticas presentes en México que tengan al menos 5 lenguas registradas en el dataset (por ejemplo, Uto-Aztecan, Mayan, Otomanguean). 
-# * Generen la matriz de similitud y el mapa de calor (Heatmap) para cada familia.
-# * Calculen el **promedio general de similitud** de cada matriz (omitiendo la diagonal principal donde la lengua se compara consigo misma). 
-# * **Conclusión:** ¿Qué familia lingüística presenta mayor diversidad interna (es decir, un promedio de similitud más bajo)?
-
-
+# > [!TIP]
+# > Utiliza bibliotecas con modelos preentrenados que te permitan realizar el etiquetado NER como [`spacy`]() o [`stanza`]()
